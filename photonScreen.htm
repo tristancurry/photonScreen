@@ -10,6 +10,7 @@ canvas {
 }
 </style>
 </head>
+
 <body>
 
 <h1 id="theTitle">Photon detection</h1>
@@ -27,16 +28,20 @@ canvas {
 	
 	<label for="colourS" >Colour</label>
 	<input type="range" id="colourS" min = "0" max = "300" step = "0.1" value="1" onInput="inputUpdate(value, min,max, id, 'colourT')">
-	<input type="text" id="colourT" value = "1" onInput="inputUpdate(value, min,max, id, 'colourS')">
+	<input type="text" id="colourT" min = "0" max = "300" value = "1" onInput="inputUpdate(value, min,max, id, 'colourS')">
 		
 	<label for="fadeS" >Fade rate</label>
 	<input type="range" id="fadeS"  min = "0" max = "100" step = "0.1" value="25" onInput="inputUpdate(value, min, max,id, 'fadeT')">
-		<input type="text" id="fadeT" value = "25" onInput="inputUpdate(value, min, max, id, 'fadeT')">
+	<input type="text" id="fadeT" min = "0" max = "100" value = "25" onInput="inputUpdate(value, min, max, id, 'fadeS')">
+		
+	<button type="button" id="playPause" onclick="buttonChange()">Pause</button>
+	<button type="button" id="reset" onClick="resetScreen()">Reset</button>
 	
 </div>
 
-
 <script>
+
+var pause = false;
 	
 	var mouseX = 0;
 	var mouseY = 0;
@@ -44,6 +49,7 @@ canvas {
 	var title = document.querySelector("#theTitle");
 	var mainCanvas = document.querySelector("#screen");
 	var mainContext = mainCanvas.getContext("2d");
+
 	mainCanvas.addEventListener('mousemove', function(event){
 			mouseX = event.pageX - mainCanvas.offsetLeft;
 			mouseY = event.pageY - mainCanvas.offsetTop;
@@ -63,48 +69,60 @@ canvas {
 
 
 
-var fadeRate = 5; //0 to 100
-var brightness = 50;
-var lamp = "rgba(0, 255, 0, 1)";
 
-mainContext.fillStyle = "rgba(0,0,0,1)";
-mainContext.fillRect(0, 0, canvasWidth, canvasHeight);
+
+resetScreen();
 drawPhotons();
 
 function drawPhotons() {
 	
-	mainContext.fillStyle = "rgba(0,0,0," + fadeRate/100 + ")";
-	mainContext.fillRect(0, 0, canvasWidth, canvasHeight);	
 
-	var randBright = Math.round(brightness + 0.1*brightness*(Math.random() - 0.5));
+	var brightness = getInputValue("brightnessS");
+	var lampColour = "hsla(" + getInputValue("colourS") + ", 100%, " +50+ "%, 0.7)";
+	var fadeRate = getInputValue("fadeS");
+	
+  	mainContext.fillStyle = "rgba(0,0,0," + fadeRate/100 + ")";
+  	mainContext.fillRect(0, 0, canvasWidth, canvasHeight);	
 
-  for (var i = 0; i < randBright; i++) {
-	  mainContext.fillStyle = lamp;
-	  mainContext.fillRect(canvasWidth*Math.random(), canvasHeight*Math.random(),1,1);
-  }
-  
-mainContext.beginPath();
-mainContext.arc(canvasWidth/2, canvasHeight/2, Math.round(canvasHeight/3), 0, 2*Math.PI, false);
-mainContext.closePath();
-mainContext.strokeStyle = "rgba(0,0,0,1)"
-mainContext.lineWidth = 10;
-mainContext.stroke();
+	if(brightness > 0){
+ 	   for (var i = 0; i < brightness; i++) {
+		   mainContext.fillStyle = lampColour;
+		   if(Math.random() > 0.2){
+			   	mainContext.globalCompositeOperation = "screen";
+			   mainContext.fillRect(canvasWidth*Math.random(), canvasHeight*Math.random(),1,1);
+			   	mainContext.globalCompositeOperation = "multiply";
+		   }
+	   }
+   }
+   
+   drawShapes();
+   
+   if(!pause){
+	   requestAnimationFrame(drawPhotons);
+   }
+}
 
-mainContext.fillStyle = "rgba(0,0,0,1)";
-mainContext.font="80px Helvetica";
-mainContext.textAlign = "center";
-mainContext.fillText("photons",canvasWidth/2 ,canvasHeight/2 - 45);
-mainContext.fillText("are",canvasWidth/2 ,canvasHeight/2 + 40);
-mainContext.fillText("phun",canvasWidth/2 ,canvasHeight/2 + 125);
+function drawShapes(){
+    mainContext.beginPath();
+    mainContext.arc(canvasWidth/2, canvasHeight/2, Math.round(canvasHeight/3), 0, 2*Math.PI, false);
+    mainContext.closePath();
+    mainContext.strokeStyle = "rgba(0,0,0,1)"
+    mainContext.lineWidth = 10;
+    mainContext.stroke();
+   
+    mainContext.fillStyle = "rgba(0,0,0,1)";
+    mainContext.font="80px Helvetica";
+    mainContext.textAlign = "center";
+    mainContext.fillText("photons",canvasWidth/2 ,canvasHeight/2 - 45);
+    mainContext.fillText("are",canvasWidth/2 ,canvasHeight/2 + 40);
+    mainContext.fillText("phun",canvasWidth/2 ,canvasHeight/2 + 125);
 
-mainContext.font = "30px Helvetica";
-mainContext.fillText("Finer details", canvasWidth/2, canvasHeight - 60);
-mainContext.font = "20px Helvetica";
-  mainContext.fillText("become visible when", canvasWidth/2, canvasHeight - 40);
-  mainContext.font = "15px Helvetica";
-  mainContext.fillText("more photons are around", canvasWidth/2, canvasHeight - 26);
-  
-  requestAnimationFrame(drawPhotons);
+    mainContext.font = "30px Helvetica";
+    mainContext.fillText("Finer details", canvasWidth/2, canvasHeight - 60);
+    mainContext.font = "20px Helvetica";
+    mainContext.fillText("become visible when", canvasWidth/2, canvasHeight - 40);
+    mainContext.font = "15px Helvetica";
+    mainContext.fillText("more photons are around", canvasWidth/2, canvasHeight - 26);
 }
 
 function constrain (val, min, max) {
@@ -117,19 +135,27 @@ function inputUpdate(val, min, max, idThis, idThat) {
 	document.querySelector("#"+idThat).value = val;
 }
 	
-	function inputUpdateColour(val, min, max) {
-		val = constrain(val,min,max);
-		document.querySelector('#colourS').value = val;
-		document.querySelector('#colourT').value = val;
-	
+function getInputValue(id) {
+    return(document.getElementById(id).value);
 }
 
-	function inputUpdateFade(val, min, max) {
-		val = constrain(val,min,max);
-		document.querySelector('#fadeS').value = val;
-		document.querySelector('#fadeT').value = val;
-	
+function buttonChange(){
+	var button = document.querySelector('#playPause');
+	if(pause){
+		button.textContent="Pause";
+		requestAnimationFrame(drawPhotons);
+	} else {
+		button.textContent="Play";	
+	}
+	pause = !pause;
 }
+
+function resetScreen(){
+	mainContext.fillStyle = "rgba(0,0,0,1)";
+	mainContext.fillRect(0, 0, canvasWidth, canvasHeight);
+}
+
+
 
 
 </script>
