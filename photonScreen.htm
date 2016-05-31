@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+<meta charset="utf-8">
+<title>Photons on a Screen</title>
+<style>
+canvas {
+    border: 3px #CCC solid;
+}
+</style>
+</head>
+<body>
+
+<h1 id="theTitle">Stats</h1>
+<h2 id="status">0 | 0</h2>
+
+
+<div id="container">
+    <canvas id="screen" height="600" width="600"></canvas>
+</div>
+
+<script>
+	
+	var mouseX = 0;
+	var mouseY = 0;
+	
+	var title = document.querySelector("#theTitle");
+	var mainCanvas = document.querySelector("#screen");
+	var mainContext = mainCanvas.getContext("2d");
+	mainCanvas.addEventListener('mousemove', function(event){
+			mouseX = event.pageX - mainCanvas.offsetLeft;
+			mouseY = event.pageY - mainCanvas.offsetTop;
+			var status = document.getElementById('status');
+			status.innerHTML = mouseX + " | " + mouseY
+	});
+	
+	var canvasWidth = mainCanvas.width;
+	var canvasHeight = mainCanvas.height;
+	
+
+
+	var requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
+							
+							
+
+
+
+var fadeRate = 5; //0 to 100
+var brightness = 5;
+var lamp = "rgba(0, 255, 0, 1)";
+
+mainContext.fillStyle = "rgba(0,0,0,1)";
+mainContext.fillRect(0, 0, canvasWidth, canvasHeight);
+drawPhotons();
+
+function drawPhotons() {
+	
+	mainContext.fillStyle = "rgba(0,0,0," + fadeRate/100 + ")";
+	mainContext.fillRect(0, 0, canvasWidth, canvasHeight);	
+
+	var randBright = Math.round(brightness + 0.1*brightness*(Math.random() - 0.5));
+
+  for (var i = 0; i < randBright; i++) {
+	  mainContext.fillStyle = lamp;
+	  mainContext.fillRect(canvasWidth*Math.random(), canvasHeight*Math.random(),1,1);
+  }
+  
+mainContext.beginPath();
+mainContext.arc(canvasWidth/2, canvasHeight/2, 200, 0, 2*Math.PI, false);
+mainContext.closePath();
+mainContext.strokeStyle = "rgba(0,0,0,1)"
+mainContext.lineWidth = 10;
+mainContext.stroke();
+
+mainContext.fillStyle = "rgba(0,0,0,1)";
+mainContext.font="80px Helvetica";
+mainContext.textAlign = "center";
+mainContext.fillText("photons",canvasWidth/2 ,canvasHeight/2 - 45);
+mainContext.fillText("are",canvasWidth/2 ,canvasHeight/2 + 40);
+mainContext.fillText("phun",canvasWidth/2 ,canvasHeight/2 + 125);
+
+mainContext.font = "30px Helvetica";
+mainContext.fillText("Finer details", canvasWidth/2, canvasHeight - 60);
+mainContext.font = "20px Helvetica";
+  mainContext.fillText("become visible when", canvasWidth/2, canvasHeight - 40);
+  mainContext.font = "15px Helvetica";
+  mainContext.fillText("more photons are around", canvasWidth/2, canvasHeight - 26);
+  
+  requestAnimationFrame(drawPhotons);
+}
+
+
+</script>
+</body>
+</html>
