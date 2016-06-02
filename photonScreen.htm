@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html>
-  
+ <!-- Simulation of photons colliding with a screen -->
+ <!-- Created by Tristan Miller, May 2016 -->
+ <!-- Download and then open in your browser. A bit slow in Firefox though! -->  
 <head>
 <meta charset="utf-8">
 <title>Photons on a Screen</title>
 <style>
 canvas {
     border: 3px #CCC solid;
+}
+
+#ui {
+	width: 30%;
+	position: absolute;
+	top: 75%;
+}
+
+input.comptrol {
+position:relative;
+left:30%;
+}
+
+#screen {
+position: absolute;
+top:10%;
+height:60%;
+}
+
+
+label {
+	position:absolute;
+	width:30%;
 }
 </style>
 </head>
@@ -23,17 +48,17 @@ canvas {
 
 <div id = "ui">
 	<label for="brightnessS" >Brightness</label>
-	<input type="range" id="brightnessS"  min="0" max ="10000" step="1" value="100" onInput="inputUpdate(value, min, max, id, 'brightnessT')" >
-	<input type="text" id="brightnessT" min="0" max="10000"  value="100" onInput="inputUpdate(value, min, max, id, 'brightnessS')">
-	
+	<input type="range" class="comptrol" id="brightnessS"  min="0" max ="10000" step="1" value="250" onInput="inputUpdate(value, min, max, id, 'brightnessT')" >
+	<input type="text" class="comptrol"id="brightnessT" min="0" max="10000"  value="250" onInput="inputUpdate(value, min, max, id, 'brightnessS')">
+	<br>
 	<label for="colourS" >Colour</label>
-	<input type="range" id="colourS" min = "0" max = "300" step = "0.1" value="1" onInput="inputUpdate(value, min,max, id, 'colourT')">
-	<input type="text" id="colourT" min = "0" max = "300" value = "1" onInput="inputUpdate(value, min,max, id, 'colourS')">
-		
+	<input type="range" id="colourS" class="comptrol" min = "0" max = "260" step = "0.1" value="120" onInput="inputUpdate(value, min,max, id, 'colourT')">
+	<input type="text" id="colourT" class="comptrol" min = "0" max = "260" value = "120" onInput="inputUpdate(value, min,max, id, 'colourS')">
+	<br>	
 	<label for="fadeS" >Fade rate</label>
-	<input type="range" id="fadeS"  min = "0" max = "100" step = "0.1" value="25" onInput="inputUpdate(value, min, max,id, 'fadeT')">
-	<input type="text" id="fadeT" min = "0" max = "100" value = "25" onInput="inputUpdate(value, min, max, id, 'fadeS')">
-		
+	<input type="range" id="fadeS" class="comptrol" min = "0" max = "100" step = "0.1" value="10" onInput="inputUpdate(value, min, max,id, 'fadeT')">
+	<input type="text" id="fadeT" class="comptrol" min = "0" max = "100" value = "10" onInput="inputUpdate(value, min, max, id, 'fadeS')">
+	<br>	
 	<button type="button" id="playPause" onclick="buttonChange()">Pause</button>
 	<button type="button" id="reset" onClick="resetScreen()">Reset</button>
 	
@@ -47,6 +72,7 @@ var pause = false;
 	var mouseY = 0;
 	
 	var title = document.querySelector("#theTitle");
+	document.querySelector("#screen").width = document.querySelector("#screen").height;
 	var mainCanvas = document.querySelector("#screen");
 	var mainContext = mainCanvas.getContext("2d");
 
@@ -78,7 +104,7 @@ function drawPhotons() {
 	
 
 	var brightness = getInputValue("brightnessS");
-	var lampColour = "hsla(" + getInputValue("colourS") + ", 100%, " +50+ "%, 0.7)";
+	var lampColour = "hsla(" + getInputValue("colourS") + ", 100%, " +50+ "%, 0.95)";
 	var fadeRate = getInputValue("fadeS");
 	
   	mainContext.fillStyle = "rgba(0,0,0," + fadeRate/100 + ")";
@@ -87,11 +113,10 @@ function drawPhotons() {
 	if(brightness > 0){
  	   for (var i = 0; i < brightness; i++) {
 		   mainContext.fillStyle = lampColour;
-		   if(Math.random() > 0.2){
-			   	mainContext.globalCompositeOperation = "screen";
+			   mainContext.globalCompositeOperation = "screen";
 			   mainContext.fillRect(canvasWidth*Math.random(), canvasHeight*Math.random(),1,1);
-			   	mainContext.globalCompositeOperation = "multiply";
-		   }
+			   mainContext.globalCompositeOperation = "multiply";
+		   
 	   }
    }
    
