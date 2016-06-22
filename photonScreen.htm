@@ -12,9 +12,8 @@ canvas {
 }
 
 #ui {
-	width: 30%;
-	position: absolute;
-	top: 75%;
+	display: block;
+	clear:left;
 }
 
 input.comptrol {
@@ -22,10 +21,11 @@ position:relative;
 left:30%;
 }
 
-#screen {
-position: absolute;
-top:10%;
-height:60%;
+
+
+#graphics {
+float: left;
+width:400px;
 }
 
 
@@ -41,9 +41,9 @@ label {
 <h1 id="theTitle">Photon detection</h1>
 
 
-
+<div id="experiment">
 <div id="graphics">
-    <canvas id="screen" height="600" width="600"></canvas>
+    <canvas id="screen" height="500" width="500"></canvas>
 </div>
 
 <div id = "ui">
@@ -63,7 +63,7 @@ label {
 	<button type="button" id="reset" onClick="resetScreen()">Reset</button>
 	
 </div>
-
+</div>
 <script>
 
 var pause = false;
@@ -72,7 +72,7 @@ var pause = false;
 	var mouseY = 0;
 	
 	var title = document.querySelector("#theTitle");
-	document.querySelector("#screen").width = document.querySelector("#screen").height;
+	//document.querySelector("#screen").width = document.querySelector("#screen").height;
 	var mainCanvas = document.querySelector("#screen");
 	var mainContext = mainCanvas.getContext("2d");
 
@@ -111,13 +111,17 @@ function drawPhotons() {
   	mainContext.fillRect(0, 0, canvasWidth, canvasHeight);	
 
 	if(brightness > 0){
+				   mainContext.globalCompositeOperation = "screen";
+				   mainContext.fillStyle = lampColour;
+
  	   for (var i = 0; i < brightness; i++) {
-		   mainContext.fillStyle = lampColour;
-			   mainContext.globalCompositeOperation = "screen";
-			   mainContext.fillRect(canvasWidth*Math.random(), canvasHeight*Math.random(),1,1);
-			   mainContext.globalCompositeOperation = "multiply";
+				var x = Math.round(canvasWidth*Math.random());
+				var y = Math.round(canvasWidth*Math.random());
+			   mainContext.fillRect(x, y,1,1);
+
 		   
 	   }
+	   			   mainContext.globalCompositeOperation = "multiply";
    }
    
    drawShapes();
@@ -132,22 +136,22 @@ function drawShapes(){
     mainContext.arc(canvasWidth/2, canvasHeight/2, Math.round(canvasHeight/3), 0, 2*Math.PI, false);
     mainContext.closePath();
     mainContext.strokeStyle = "rgba(0,0,0,1)"
-    mainContext.lineWidth = 10;
+    mainContext.lineWidth = 0.016*canvasHeight;
     mainContext.stroke();
    
     mainContext.fillStyle = "rgba(0,0,0,1)";
-    mainContext.font="80px Helvetica";
+    mainContext.font= 0.13*canvasHeight + "px Helvetica";
     mainContext.textAlign = "center";
-    mainContext.fillText("photons",canvasWidth/2 ,canvasHeight/2 - 45);
-    mainContext.fillText("are",canvasWidth/2 ,canvasHeight/2 + 40);
-    mainContext.fillText("phun",canvasWidth/2 ,canvasHeight/2 + 125);
+    mainContext.fillText("photons",canvasWidth/2 ,canvasHeight/2 - 0.075*canvasHeight);
+    mainContext.fillText("are",canvasWidth/2 ,canvasHeight/2 + 0.067*canvasHeight);
+    mainContext.fillText("phun",canvasWidth/2 ,canvasHeight/2 + 0.21*canvasHeight);
 
-    mainContext.font = "30px Helvetica";
-    mainContext.fillText("Finer details", canvasWidth/2, canvasHeight - 60);
-    mainContext.font = "20px Helvetica";
-    mainContext.fillText("become visible when", canvasWidth/2, canvasHeight - 40);
-    mainContext.font = "15px Helvetica";
-    mainContext.fillText("more photons are around", canvasWidth/2, canvasHeight - 26);
+    mainContext.font = 0.05*canvasHeight + "px Helvetica";
+    mainContext.fillText("Finer details", canvasWidth/2, canvasHeight - 0.1*canvasHeight);
+    mainContext.font = 0.03*canvasHeight + "px Helvetica";
+    mainContext.fillText("become visible when", canvasWidth/2, canvasHeight - 0.067*canvasHeight);
+    mainContext.font = 0.025*canvasHeight + "px Helvetica";
+    mainContext.fillText("more photons are around", canvasWidth/2, canvasHeight - 0.043*canvasHeight);
 }
 
 function constrain (val, min, max) {
